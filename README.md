@@ -17,7 +17,7 @@ To test the correctness of our implementation, we create N_THREADS threads and e
 Then checks if (N_THREADS * N_INC) is equal to the value of the global variable.
 In addition to the futex-lock, we also conduct the same test using dummy lock, simple Compare-And-Swap lock and pthread_mutex_lock.
 
-We also run a test to investigate the performace effect of the number of atomic operations. In our futex lock, we tries atomic operations (CAS) for the lock variable before we call futex(). We vary the number of CAS and evaluate the lock performance.
+We also run a test to investigate the performace effect of the number of atomic operations. In our futex lock, we try atomic operations (CAS) for the lock variable before we call futex(). We vary the number of CAS and evaluate the lock performance.
 
 
 ## Getting Started
