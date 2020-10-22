@@ -3,7 +3,7 @@
 ## About The Project
 
 This is an implementation of [futex](https://man7.org/linux/man-pages/man2/futex.2.html)-based blocking synchronization. In this lock implementation, one first tries
-an atomic operation ([Compare-And-Swap](https://en.wikipedia.org/wiki/Compare-and-swap)) to test if one can get the lock immediately. If it fails, it calls futex() which makes it (probably) sleep. Later, it is waken up when
+atomic operations ([Compare-And-Swap](https://en.wikipedia.org/wiki/Compare-and-swap)) to test if one can get the lock immediately. If it fails, it calls futex() which makes it (probably) sleep. Later, it is waken up when
 the lock holder releases the lock by calling futex() with FUTEX_WAKE operation flag. Even after waking up, it checks if the lock variable represents that lock is "not-held-state" and 
 retries futex() if it does not. This prevents [sprious wakeup](https://en.wikipedia.org/wiki/Spurious_wakeup) from negating the correctness of the synchronization.
 
@@ -17,15 +17,18 @@ To test the correctness of our implementation, we create N_THREADS threads and e
 Then checks if (N_THREADS * N_INC) is equal to the value of the global variable.
 In addition to the futex-lock, we also conduct the same test using dummy lock, simple Compare-And-Swap lock and pthread_mutex_lock.
 
+We also run a test to investigate the performace effect of the number of atomic operations. In our futex lock, we tries atomic operations (CAS) for the lock variable before we call futex(). We vary the number of CAS and evaluate the lock performance.
+
 
 ## Getting Started
 ### Installation
 ```sh
-make
+./install.sh
 ```
 ### Run
 ```sh
-./run
+build/locks_test/locks_test
+build/futex_backoff_test/futex_backoff_test
 ```
 
 <!-- CONTRIBUTING -->
