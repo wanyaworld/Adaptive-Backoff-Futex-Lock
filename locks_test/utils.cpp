@@ -1,4 +1,6 @@
 #include "utils.h"
+#include "bench.h"
+#include <thread>
 
 int* shared_data;
 const unsigned int N_THREADS = 64;
@@ -9,11 +11,19 @@ std::mutex mutex;
 int CAS_lock_var;
 int futex_lock_var;
 
-void inc(void (*pf_lock)(), void (*pf_unlock)()) {
-	for (int i = 0 ; i < N_INC ; i++) {
+std::thread::id parent_id;
+unsigned int duration = 5;
+
+static void sighandler(int x) {
+	bench->stop = 1;
+}
+
+void inc(void (*pf_lock)(), void (*pf_unlock)(), const unsigned int thr_id) {
+	for (int i = 0 ; !bench->stop ; i++) {
 		pf_lock();
 		(*shared_data)++;
 		pf_unlock();
+		(bench->workers[i].works)++;
 	}
 }
 
@@ -79,30 +89,33 @@ void mutex_unlock() {
 }
 
 void perform(void (*pf_lock)(), void (*pf_unlock)(), std::string method) {
+	parent_id = std::this_thread::get_id();
+	init_bench(&bench, N_THREADS, duration);
+	
+	if (signal(SIGALRM, sighandler) == SIG_ERR) {
+		return ;
+	}
+	
+	alarm(bench->duration);
+	
 	auto pThr = new std::thread[N_THREADS]();
-	for (int i = 0 ; i < N_THREADS ; i++ )
-		pThr[i] = std::thread(inc, pf_lock, pf_unlock);
+	for (int i = 0 ; i < N_THREADS ; i++ ) {
+		try {
+			pThr[i] = std::thread(inc, pf_lock, pf_unlock, i);
+		}
+		catch (std::exception &e) {
+			std::cout << e.what() << std::endl;
+		}
+	}
 
 	auto start = std::chrono::steady_clock::now();
 	for (int i = 0 ; i < N_THREADS ; i++ )
 		pThr[i].join();
 
 	auto end = std::chrono::steady_clock::now();
+	uninit_bench(bench);
 	print_result(method, start, end);
-
-}
-
-unsigned int perform_ret(void (*pf_lock)(), void (*pf_unlock)()) {
-	auto pThr = new std::thread[N_THREADS]();
-	for (int i = 0 ; i < N_THREADS ; i++ )
-		pThr[i] = std::thread(inc, pf_lock, pf_unlock);
-
-	auto start = std::chrono::steady_clock::now();
-	for (int i = 0 ; i < N_THREADS ; i++ )
-		pThr[i].join();
-
-	auto end = std::chrono::steady_clock::now();
-	return std::chrono::duration_cast<std::chrono::microseconds>(end-start).count();  
+	
 }
 
 void do_dummy() {
@@ -132,16 +145,6 @@ void do_futex() {
 	void (*pf_unlock)() = futex_unlock;
 
 	perform(pf_lock, pf_unlock, "futex");
-}
-
-unsigned int do_futex_ret() {
-	*shared_data = 0;
-
-	futex_lock_var = 0;
-	void (*pf_lock)() = futex_lock;
-	void (*pf_unlock)() = futex_unlock;
-
-	return perform_ret(pf_lock, pf_unlock);
 }
 
 void do_pthr_mutex() {

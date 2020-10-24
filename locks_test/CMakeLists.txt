@@ -1,7 +1,7 @@
 project(locks_test)
 
 # Create the executable
-add_executable(${PROJECT_NAME} main.cpp utils.cpp)
+add_executable(${PROJECT_NAME} main.cpp utils.cpp bench.cpp)
 
 # Link the static library from subproject1 using it's alias sub::lib1
 # Link the header only library from subproject2 using it's alias sub::lib2

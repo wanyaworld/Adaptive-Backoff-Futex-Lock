@@ -1,4 +1,5 @@
 #include "utils.h"
+#include "bench.h"
 
 int main(int argc, char** argv) {
 	int shm_id = shmget(IPC_PRIVATE, 4096, IPC_CREAT | 0666);

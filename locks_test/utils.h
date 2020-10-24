@@ -1,5 +1,6 @@
 #include <errno.h>
 #include <linux/futex.h>
+#include <unistd.h>
 #include <sched.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,6 +26,9 @@ extern unsigned int N_BACKOFF;
 extern std::mutex mutex;
 extern int CAS_lock_var;
 extern int futex_lock_var;
+
+extern std::thread::id parent_id;
+extern unsigned int duration;
 
 void do_dummy();
 void do_CAS();
