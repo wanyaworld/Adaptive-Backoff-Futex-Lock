@@ -3,7 +3,7 @@
 extern struct bench *bench;
 
 struct worker {
-	unsigned int works;
+	unsigned long long int works;
 };
 
 struct bench {

@@ -23,19 +23,19 @@ void inc(void (*pf_lock)(), void (*pf_unlock)(), const unsigned int thr_id) {
 		pf_lock();
 		(*shared_data)++;
 		pf_unlock();
-		(bench->workers[i].works)++;
+		(bench->workers[thr_id].works)++;
 	}
 }
 
-void print_result(const std::string &lock_method, const Time& s, const Time &e) {
+void print_result(const std::string &lock_method) {
+	unsigned long long int sum{};
+	for (int i = 0 ; i < bench->n_workers ; i++)
+		sum += bench->workers[i].works;
+
 	std::cout << "[";
-	std::cout << std::chrono::duration_cast<std::chrono::microseconds>(e-s).count();  
+	std::cout << sum;
 	std::cout << "] usec, ";
-	std::cout << lock_method << " ";
-	if (*shared_data == N_THREADS * N_INC) 
-		std::cout << "correct" << std::endl;
-	else
-		std::cout << "NOT correct, is: " << *shared_data << " must be: " << N_THREADS * N_INC << std::endl;
+	std::cout << lock_method << std::endl;
 }
 
 int futex(int* uaddr, int futex_op, int val, const struct timespec* timeout,
@@ -113,8 +113,8 @@ void perform(void (*pf_lock)(), void (*pf_unlock)(), std::string method) {
 		pThr[i].join();
 
 	auto end = std::chrono::steady_clock::now();
+	print_result(method);
 	uninit_bench(bench);
-	print_result(method, start, end);
 	
 }
 
