@@ -3,8 +3,7 @@
 #include <thread>
 
 int* shared_data;
-const unsigned int N_THREADS = 64;
-const unsigned int N_INC = 1000;
+unsigned int N_THREADS = 64;
 unsigned int N_BACKOFF = 10;
 
 std::mutex mutex;

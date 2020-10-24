@@ -19,8 +19,7 @@
 
 using Time = std::chrono::time_point<std::chrono::steady_clock>;
 extern int* shared_data;
-extern const unsigned int N_THREADS;
-extern const unsigned int N_INC;
+extern unsigned int N_THREADS;
 extern unsigned int N_BACKOFF;
 
 extern std::mutex mutex;

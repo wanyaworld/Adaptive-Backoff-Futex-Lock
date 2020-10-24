@@ -1,7 +1,7 @@
 project(futex_backoff_test)
 
 # Create the executable
-add_executable(${PROJECT_NAME} main.cpp)
+add_executable(${PROJECT_NAME} main.cpp ../locks_test/bench.cpp)
 
 # Link the static library from subproject1 using it's alias sub::lib1
 # Link the header only library from subproject2 using it's alias sub::lib2
