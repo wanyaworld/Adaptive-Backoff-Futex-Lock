@@ -1,4 +1,6 @@
+mkdir logs
+rm -rf build
 mkdir build
 cd build
--DCMAKE_BUILD_TYPE=Debug cmake ../
+cmake -DCMAKE_BUILD_TYPE=Debug  ../
 make

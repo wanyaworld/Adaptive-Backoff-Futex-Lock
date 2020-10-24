@@ -8,6 +8,8 @@ void init_bench(struct bench **bench, const unsigned int n_workers, const unsign
 	(*bench)->duration = duration;
 	(*bench)->n_workers = n_workers;
 	(*bench)->workers = new struct worker[n_workers];
+	for (int i = 0 ; i < n_workers ; i++)
+		(*bench)->workers[i].works = 0;
 }
 
 void uninit_bench(struct bench *bench) {

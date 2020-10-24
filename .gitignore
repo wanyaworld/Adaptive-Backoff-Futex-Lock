@@ -1,3 +1,6 @@
 futex_test
 run
 *.o
+build
+logs
+tags

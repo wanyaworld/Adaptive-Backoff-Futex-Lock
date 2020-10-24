@@ -3,16 +3,17 @@
 #include <assert.h>
 #include <memory>
 #include <vector>
+#include <fstream>
 
 int* shared_data;
 const unsigned int N_THREADS = 64;
 const unsigned int N_INC = 10000;
 std::unique_ptr<FutexLock> pLock;
 
-static const unsigned int N_CASES = 5; /* How many cases we're gonna average. */
-static const unsigned int MAX_BACKOFF = N_THREADS / 1;
+static const unsigned int N_CASES = 1; /* How many cases we're gonna average. */
+static const unsigned int MAX_BACKOFF = N_THREADS / 10;
 
-unsigned int duration = 3;
+unsigned int duration = 1;
 
 static void sighandler (int x) {
 	bench->stop = 1;
@@ -66,7 +67,7 @@ int main(int argc, char *argv[])
 
   for (int i = 1 ; i <= MAX_BACKOFF || i == 1 ; i++) {
     pLock->N_BACKOFF = i;
-    unsigned int accum = 0;
+    unsigned long long int accum = 0;
     std::cout << "performing ";
     std::cout << i;
     std::cout << "th test" << std::endl;
@@ -77,14 +78,29 @@ int main(int argc, char *argv[])
       accum += do_futex_expr();
 		}
     (*usec_list)[i] = accum / N_CASES;
+			std::cout << (*usec_list)[i] << std::endl;
   }
+
+	auto c = std::chrono::system_clock::now();
+	auto t = std::chrono::system_clock::to_time_t(c);
+	std::string FileName = std::ctime(&t);	
+	std::ofstream fs;
+	fs.open("logs/" + FileName);
 
   std::cout << "**** Threads: ";
   std::cout << N_THREADS;
   std::cout << "****" << std::endl;
-  for (int i = 1 ; i <= MAX_BACKOFF ; i++) {
+  
+	fs << "**** Threads: ";
+  fs << N_THREADS;
+  fs << "****" << std::endl;
+  
+	for (int i = 1 ; i <= MAX_BACKOFF ; i++) {
     std::cout << (*usec_list)[i] << std::endl;
+    fs<< (*usec_list)[i] << std::endl;
   }
+
+	fs.close();
 
   return 0;
 }
