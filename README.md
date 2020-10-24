@@ -17,13 +17,13 @@ To test the correctness of our implementation, we conducted a experiment where w
 Then checks if (N_THREADS * N_INC) is equal to the value of the global variable. In addition to the futex-lock, we also conduct the same test using dummy lock, simple Compare-And-Swap lock and pthread_mutex_lock. The experiment showed that every lock except dummy lock guarantees correct synchronization.
 
 ## Performance Evaluation
-We run tests to investigate the performace effect of the futex-lock. 
+We run tests to investigate the performace of the futex-lock. In all tests, threads acquire the lock and perform simple global variable increment.
 
 ### futex_backoff_test
 In our futex lock, we try atomic operations (CAS) for the lock variable before we call futex(). We vary the number of CAS and evaluate the lock performance to investigate how the futex-lock's performance behavior is affected by the number of CAS before blocking.
 
 ### locks_test
-We evaluate the performance of following synchronizaiton primitives.
+We evaluate and compare the performance of following synchronizaiton primitives.
 
 1. dummy-lock (which is simply a no-op)
 2. CAS-lock
