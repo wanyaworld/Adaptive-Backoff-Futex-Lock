@@ -10,10 +10,10 @@ const unsigned int N_THREADS = 64;
 const unsigned int N_INC = 10000;
 std::unique_ptr<FutexLock> pLock;
 
-static const unsigned int N_CASES = 1; /* How many cases we're gonna average. */
-static const unsigned int MAX_BACKOFF = N_THREADS / 10;
+static const unsigned int N_CASES = 5; /* How many cases we're gonna average. */
+static const unsigned int MAX_BACKOFF = N_THREADS / 4;
 
-unsigned int duration = 1;
+unsigned int duration = 5;
 
 static void sighandler (int x) {
 	bench->stop = 1;
