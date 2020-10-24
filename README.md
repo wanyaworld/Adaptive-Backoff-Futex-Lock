@@ -7,28 +7,41 @@ atomic operations ([Compare-And-Swap](https://en.wikipedia.org/wiki/Compare-and-
 the lock holder releases the lock by calling futex() with FUTEX_WAKE operation flag. Even after waking up, it checks if the lock variable represents that lock is "not-held-state" and 
 retries futex() if it does not. This prevents [sprious wakeup](https://en.wikipedia.org/wiki/Spurious_wakeup) from negating the correctness of the synchronization.
 
-To test the correctness of our implementation, we create N_THREADS threads and each thread 
+To test the correctness of our implementation, we conducted a experiment where we create N_THREADS threads and each thread 
 
 1. calls lock() method
 2. increases the global variable 
 3. calls unlock() method
 4. repeats \[1-3\] N_INC times.
 
-Then checks if (N_THREADS * N_INC) is equal to the value of the global variable.
-In addition to the futex-lock, we also conduct the same test using dummy lock, simple Compare-And-Swap lock and pthread_mutex_lock.
+Then checks if (N_THREADS * N_INC) is equal to the value of the global variable. In addition to the futex-lock, we also conduct the same test using dummy lock, simple Compare-And-Swap lock and pthread_mutex_lock. The experiment showed that every lock except dummy lock guarantees correct synchronization.
 
-We also run a test to investigate the performace effect of the number of atomic operations. In our futex lock, we try atomic operations (CAS) for the lock variable before we call futex(). We vary the number of CAS and evaluate the lock performance.
+## Performance Evaluation
+We run tests to investigate the performace effect of the futex-lock. 
+
+### futex_backoff_test
+In our futex lock, we try atomic operations (CAS) for the lock variable before we call futex(). We vary the number of CAS and evaluate the lock performance to investigate how the futex-lock's performance behavior is affected by the number of CAS before blocking.
+
+### locks_test
+We evaluate the performance of following synchronizaiton primitives.
+
+1. dummy-lock (which is simply a no-op)
+2. CAS-lock
+3. pthread_mutex_lock
+4. futex-lock
+
 
 
 ## Getting Started
 ### Installation
 ```sh
-./install.sh
+./install.sh or
+./debug_install.sh (for enabling -g compile option)
 ```
 ### Run
 ```sh
-build/locks_test/locks_test
-build/futex_backoff_test/futex_backoff_test
+build/futex_backoff_test/futex_backoff_test 
+build/locks_test/locks_test <# of threads>
 ```
 
 <!-- CONTRIBUTING -->
