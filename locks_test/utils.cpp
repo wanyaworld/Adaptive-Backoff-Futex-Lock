@@ -34,7 +34,15 @@ void print_result(const std::string &lock_method) {
 	std::cout << "[";
 	std::cout << sum;
 	std::cout << "] usec, ";
-	std::cout << lock_method << std::endl;
+	std::cout << lock_method;
+
+	std::string is_correct;
+
+	if (*shared_data == sum) is_correct = (std::string)" (correct)";
+	
+	else is_correct = (std::string)" (NOT correct)";
+	
+	std::cout << is_correct << std::endl;
 }
 
 int futex(int* uaddr, int futex_op, int val, const struct timespec* timeout,
@@ -123,7 +131,7 @@ void do_dummy() {
 	void (*pf_lock)() = dummy_func;
 	void (*pf_unlock)() = dummy_func;
 
-	perform(pf_lock, pf_unlock, "dummy lock");
+	perform(pf_lock, pf_unlock, "dummy-lock");
 }
 
 void do_CAS() {
@@ -133,7 +141,7 @@ void do_CAS() {
 	void (*pf_lock)() = CAS_lock;
 	void (*pf_unlock)() = CAS_unlock;
 
-	perform(pf_lock, pf_unlock, "CAS");
+	perform(pf_lock, pf_unlock, "CAS-lock");
 }
 
 void do_futex() {
@@ -143,7 +151,7 @@ void do_futex() {
 	void (*pf_lock)() = futex_lock;
 	void (*pf_unlock)() = futex_unlock;
 
-	perform(pf_lock, pf_unlock, "futex");
+	perform(pf_lock, pf_unlock, "futex-lock");
 }
 
 void do_pthr_mutex() {
@@ -152,5 +160,5 @@ void do_pthr_mutex() {
 	void (*pf_lock)() = mutex_lock;
 	void (*pf_unlock)() = mutex_unlock;
 
-	perform(pf_lock, pf_unlock, "mutex");
+	perform(pf_lock, pf_unlock, "pthread_mutex_lock");
 }
