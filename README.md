@@ -45,6 +45,7 @@ Correctness is checked for each lock.
 ```sh
 build/futex_backoff_test/futex_backoff_test 
 build/locks_test/locks_test <# of threads>
+build/corr_check/corr_check
 ```
 
 <!-- CONTRIBUTING -->
