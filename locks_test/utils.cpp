@@ -22,13 +22,17 @@ static void sighandler(int x) {
 	bench->stop = 1;
 }
 
-void sleep_msec(const unsigned int msec, void (*pf_lock)(int *), void (*pf_unlock)(int *), const unsigned int thr_id, int *lock_var) {
+void sleep_usec(const unsigned int usec, void (*pf_lock)(int *), void (*pf_unlock)(int *), const unsigned int thr_id, int *lock_var) {
 	for (int i = 0 ; !bench->stop ; i++) {
 		pf_lock(lock_var);
-		usleep(msec * MSEC_TO_USEC);
+		usleep(usec);
 		pf_unlock(lock_var);
 		(bench->workers[thr_id].heavy_works)++;
 	}
+}
+
+void sleep_msec(const unsigned int msec, void (*pf_lock)(int *), void (*pf_unlock)(int *), const unsigned int thr_id, int *lock_var) {
+	sleep_usec(msec * MSEC_TO_USEC, pf_lock, pf_unlock, thr_id, lock_var);
 }
 
 void inc(void (*pf_lock)(int *), void (*pf_unlock)(int *), const unsigned int thr_id, int *lock_var) {
@@ -117,8 +121,8 @@ void perform(struct lock_bench_instance *lb) {
 	auto pThr = new std::thread[N_THREADS]();
 	for (int i = 0 ; i < N_THREADS / 2 ; i++ ) {
 		try {
-			pThr[i * 2] = std::thread(inc, lb->lock, lb->unlock, i, lb->lock_var);
-			pThr[i * 2 + 1] = std::thread(sleep_msec, 1, lb->lock, lb->unlock, i, lb->lock_var_heavy);
+			pThr[i * 2] = std::thread(inc, dummy_func, dummy_func, i, lb->lock_var);
+			pThr[i * 2 + 1] = std::thread(sleep_usec, 100, lb->lock, lb->unlock, i, lb->lock_var_heavy);
 		}
 		catch (std::exception &e) {
 			std::cout << e.what() << std::endl;
