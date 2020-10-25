@@ -30,6 +30,9 @@ We evaluate and compare the performance of following synchronizaiton primitives.
 3. pthread_mutex_lock
 4. futex-lock
 
+### corr_check
+Correctness is checked for each lock.
+
 
 
 ## Getting Started
@@ -42,6 +45,7 @@ We evaluate and compare the performance of following synchronizaiton primitives.
 ```sh
 build/futex_backoff_test/futex_backoff_test 
 build/locks_test/locks_test <# of threads>
+build/corr_check/corr_check
 ```
 
 <!-- CONTRIBUTING -->
