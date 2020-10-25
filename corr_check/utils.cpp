@@ -49,11 +49,17 @@ void print_result(const std::string &lock_method) {
 
 	std::cout << "[";
 	std::cout << sum;
-	std::cout << "] heavy[";
-	std::cout << sum_heavy;
 	std::cout << "] (";
 	std::cout << lock_method;
-	std::cout << ")" << std::endl;
+	std::cout << ")";
+
+	std::string is_correct;
+
+	if (*shared_data == sum) is_correct = (std::string)" (correct)";
+	
+	else is_correct = (std::string)" (NOT correct)";
+	
+	std::cout << is_correct << std::endl;
 }
 
 int futex(int* uaddr, int futex_op, int val, const struct timespec* timeout,
@@ -115,10 +121,9 @@ void perform(struct lock_bench_instance *lb) {
 	alarm(bench->duration);
 	
 	auto pThr = new std::thread[N_THREADS]();
-	for (int i = 0 ; i < N_THREADS / 2 ; i++ ) {
+	for (int i = 0 ; i < N_THREADS ; i++ ) {
 		try {
-			pThr[i * 2] = std::thread(inc, lb->lock, lb->unlock, i, lb->lock_var);
-			pThr[i * 2 + 1] = std::thread(sleep_msec, 1, lb->lock, lb->unlock, i, lb->lock_var_heavy);
+			pThr[i] = std::thread(inc, lb->lock, lb->unlock, i, lb->lock_var);
 		}
 		catch (std::exception &e) {
 			std::cout << e.what() << std::endl;
