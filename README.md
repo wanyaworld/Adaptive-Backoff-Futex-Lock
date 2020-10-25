@@ -30,6 +30,9 @@ We evaluate and compare the performance of following synchronizaiton primitives.
 3. pthread_mutex_lock
 4. futex-lock
 
+### corr_check
+Correctness is checked for each lock.
+
 
 
 ## Getting Started
