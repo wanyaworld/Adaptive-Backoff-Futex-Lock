@@ -4,6 +4,7 @@
 
 #include "bench.h"
 
+namespace corr_check::utils {
 static const unsigned int MSEC_TO_USEC = 1000;
 
 int* shared_data;
@@ -119,11 +120,11 @@ void perform(struct lock_bench_instance* lb) {
 
   alarm(bench->duration);
 
-  std::shared_ptr<std::thread> pThr[N_THREADS];
+  std::unique_ptr<std::thread> pThr[N_THREADS];
 
   for (int i = 0; i < N_THREADS; i++) {
     try {
-      pThr[i] = std::make_shared<std::thread>(inc, lb->lock, lb->unlock, i,
+      pThr[i] = std::make_unique<std::thread>(inc, lb->lock, lb->unlock, i,
                                               lb->lock_var);
     } catch (std::exception& e) {
       std::cout << e.what() << std::endl;
@@ -191,3 +192,5 @@ void do_pthr_mutex() {
 
   perform(plb.get());
 }
+
+}  // namespace corr_check::utils
